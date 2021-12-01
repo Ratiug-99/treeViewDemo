@@ -1,6 +1,7 @@
 package com.ratiug.myapplication.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -25,6 +26,26 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         binding = MainFragmentBinding.bind(view)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        Log.d("DBG", "onViewCreated: ")
+        setupObserver()
+        binding?.testbtn?.setOnClickListener {
+//            Log.d("DBG", "onViewCreated: ${binding?.treeView?.selectedValues()}")
+            val listOfCheckedTasks: ArrayList<TreeNode<TaskGroupNode>> = arrayListOf()
+            binding?.treeView?.selectedValuesTasks(listOfCheckedTasks)
+//            Log.d("DBG", "selected tasks: ${listOfCheckedTasks.size}\n")
+        }
+    }
+
+    private fun setupObserver() {
+        if (viewModel.test.value == null) {
+            setupAdapter()
+        } else {
+            binding?.treeView?.adapter = viewModel.test.value
+        }
+    }
+
+    private fun setupAdapter() {
 
         val workOrderTasks =
             TreeNode(
@@ -377,14 +398,6 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         tg7.setChildren(listOf(sa7))
         workOrderTasks.setChildren(listOf(tg1, tg2, tg3, tg4, tg5, tg6, tg7))
         binding?.treeView?.setRoots(listOf(workOrderTasks))
-
-        binding?.testbtn?.setOnClickListener {
-//            Log.d("DBG", "onViewCreated: ${binding?.treeView?.selectedValues()}")
-            val listOfCheckedTasks: ArrayList<TreeNode<TaskGroupNode>> = arrayListOf()
-            binding?.treeView?.selectedValuesTasks(listOfCheckedTasks)
-//            viewModel.test = binding?.treeView?.adapter
-//            Log.d("DBG", "selected tasks: ${listOfCheckedTasks.size}\n")
-        }
+        viewModel.test.value = binding?.treeView?.adapter
     }
-
 }
